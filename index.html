@@ -51,9 +51,9 @@
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/poppins-700-latin.woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/fonts.css">
 
-<link rel="preload" as="image" href="assets/img/banner-960.webp" type="image/webp"
-      imagesrcset="assets/img/banner-640.webp 640w, assets/img/banner-960.webp 960w"
-      imagesizes="(max-width: 980px) 90vw, 40vw">
+<link rel="preload" as="image" href="assets/img/hero-cutout-824.webp" type="image/webp"
+      imagesrcset="assets/img/hero-cutout-412.webp 412w, assets/img/hero-cutout-824.webp 824w"
+      imagesizes="(max-width: 980px) 74vw, 40vw">
 <link rel="stylesheet" href="assets/css/styles.css">
 
 <!-- Structured data: Person -->
@@ -206,25 +206,46 @@
       PhD candidate · Open to postdoctoral positions
     </p>
 
-    <!-- Single H1, carrying the full name for search -->
-    <h1 class="hero__name" data-hero="2">
-      <span class="hero__name-line hero__name-line--outline">Kouantchou</span>
-      <span class="hero__name-line">Njeudji <span class="hero__given">Nathy Ingrid</span></span>
-    </h1>
+    <!-- Layered composition: the name is a full-width band, the cutout stands in
+         front of it (hero__figure raised by z-index), and the supporting content
+         sits beneath. Order here is DOM/reading order — visual stacking is CSS. -->
+    <div class="hero__stage">
+      <!-- Single H1, carrying the full name for search -->
+      <!-- Surname outlined on one line; the given names split either side of the
+           subject on the next, so she stands in the gap between them rather than
+           covering a word. -->
+      <h1 class="hero__name" data-hero="2">
+        <span class="hero__name-line hero__name-line--surname">
+          <span class="hero__word--outline">Kouantchou Njeudji</span>
+        </span>
+        <span class="hero__name-line hero__name-line--given">
+          <span class="hero__given hero__given--left">Nathy</span>
+          <span class="hero__given hero__given--right">Ingrid</span>
+        </span>
+      </h1>
 
-    <div class="hero__grid">
-      <div>
+      <figure class="hero__figure" data-hero="6">
+        <picture>
+          <source type="image/webp"
+                  srcset="assets/img/hero-cutout-412.webp 412w,
+                          assets/img/hero-cutout-824.webp 824w"
+                  sizes="(max-width: 980px) 74vw, 40vw">
+          <img src="assets/img/hero-cutout-824.png"
+               srcset="assets/img/hero-cutout-412.png 412w,
+                       assets/img/hero-cutout-824.png 824w"
+               sizes="(max-width: 980px) 74vw, 40vw"
+               width="824" height="954"
+               fetchpriority="high" decoding="async"
+               id="portrait"
+               alt="Kouantchou Njeudji Nathy Ingrid, analytical chemist and XRF specialist, in black and red academic regalia and a tasselled cap, holding a diploma.">
+        </picture>
+      </figure>
+
+      <div class="hero__aside">
         <p class="hero__role" data-hero="3">
           <span class="hero__role-item">Analytical Chemist</span>
           <span class="hero__role-sep" aria-hidden="true"></span>
           <span class="hero__role-item">XRF Specialist</span>
-        </p>
-
-        <p class="hero__intro" data-hero="4">
-          I specialise in <strong>X-ray fluorescence spectroscopy</strong>, developing
-          multi-element analytical methods on the <strong>Shimadzu EDX-900</strong> for
-          accurate quantification in aqueous solutions — and applying them to quality
-          control in the cosmetics and fragrance industries.
         </p>
 
         <div class="hero__actions" data-hero="5">
@@ -239,34 +260,32 @@
         </div>
       </div>
 
-      <figure class="hero__figure" data-hero="6">
-        <div class="hero__portrait">
-          <picture>
-            <source type="image/webp"
-                    srcset="assets/img/banner-640.webp 640w,
-                            assets/img/banner-960.webp 960w"
-                    sizes="(max-width: 980px) 90vw, 40vw">
-            <img src="assets/img/banner-960.jpg"
-                 srcset="assets/img/banner-640.jpg 640w,
-                         assets/img/banner-960.jpg 960w"
-                 sizes="(max-width: 980px) 90vw, 40vw"
-                 width="960" height="1200"
-                 fetchpriority="high" decoding="async"
-                 id="portrait"
-                 alt="Kouantchou Njeudji Nathy Ingrid, analytical chemist and XRF specialist, in black and red academic regalia and a tasselled cap, holding a diploma.">
-          </picture>
-        </div>
-
-        <div class="hero__badge">
-          <span class="hero__badge-icon" aria-hidden="true">
-            <svg width="18" height="18" fill="currentColor" aria-hidden="true" viewBox="0 -960 960 960"><path d="M200-120q-51 0-72.5-45.5T138-250l222-270v-240h-40q-17 0-28.5-11.5T280-800q0-17 11.5-28.5T320-840h320q17 0 28.5 11.5T680-800q0 17-11.5 28.5T640-760h-40v240l222 270q32 39 10.5 84.5T760-120H200Zm0-80h560L520-492v-268h-80v268L200-200Zm280-280Z"/></svg>
-          </span>
-          <span>
-            <span class="hero__badge-val">Shimadzu EDX-900</span>
-            <span class="hero__badge-key">Primary instrument</span>
-          </span>
-        </div>
-      </figure>
+      <ul class="hero__pills" data-hero="7">
+        <li>
+          <a class="pill" href="https://orcid.org/0009-0001-3452-1432" target="_blank" rel="noopener">
+            <svg class="pill__icon" width="15" height="15" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M128 0C57.3 0 0 57.3 0 128s57.3 128 128 128 128-57.3 128-128S198.7 0 128 0zM86.3 186.2H70.9V79.1h15.4v107.1zM78.6 66.9c-5.5 0-10-4.5-10-10s4.5-10 10-10 10 4.5 10 10-4.5 10-10 10zm106.5 119.3h-38.9V79.1h38.9c31.6 0 45.4 24.4 45.4 53.6 0 31.7-19.9 53.5-45.4 53.5zm-.6-92.5h-22.9v78.6h22.9c21.7 0 30.6-16.9 30.6-39.3 0-24.7-11.4-39.3-30.6-39.3z"/></svg>
+            ORCID
+          </a>
+        </li>
+        <li>
+          <a class="pill" href="https://scholar.google.com/citations?hl=fr&amp;user=JTKK_gQAAAAJ" target="_blank" rel="noopener">
+            <svg class="pill__icon" width="15" height="15" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M480-120 200-272v-240L40-600l440-240 440 240v320h-80v-276l-80 44v240L480-120Zm0-332 274-148-274-148-274 148 274 148Zm0 241 200-108v-151L480-360 280-470v151l200 108Z"/></svg>
+            Scholar
+          </a>
+        </li>
+        <li>
+          <a class="pill" href="https://www.linkedin.com/in/nathy-ingrid-kouantchou-njeudji-9454073b8" target="_blank" rel="noopener">
+            <svg class="pill__icon" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.63-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zm1.78 13.02H3.55V9h3.57v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.22.79 24 1.77 24h20.45c.98 0 1.78-.78 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
+            LinkedIn
+          </a>
+        </li>
+        <li>
+          <a class="pill" href="mailto:kouantchounathyingrid@gmail.com">
+            <svg class="pill__icon" width="15" height="15" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160Zm320-280L160-640v400h640v-400L480-440Zm0-80 320-200H160l320 200ZM160-640v-80 480-400Z"/></svg>
+            Email
+          </a>
+        </li>
+      </ul>
     </div>
 
     <!-- Metrics: every figure traceable to nathy.md. The real values are in the

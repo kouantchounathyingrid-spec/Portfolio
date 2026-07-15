@@ -224,13 +224,15 @@
     });
   }
 
-  /* --- Portrait parallax --------------------------------------------------- */
+  /* --- Hero cutout drift ---------------------------------------------------- */
+  /* The hero subject is a free-standing cutout layered over the name, not a photo
+     inside an overflow-hidden frame, so there is no overscan to drift within.
+     Instead the whole figure rises slightly as the hero scrolls away, keeping a
+     little depth against the headline behind it. */
   function initParallax() {
-    const img = document.getElementById('portrait');
-    if (!img || prefersReduced()) return;
-
-    const figure = img.closest('.hero__figure');
-    if (!figure) return;
+    const figure = document.querySelector('.hero__figure');
+    const target = figure && figure.querySelector('picture');
+    if (!figure || !target || prefersReduced()) return;
 
     let ticking = false;
     const update = () => {
@@ -239,11 +241,9 @@
         ticking = false;
         return;
       }
-      // Drift the image within its overflow-hidden frame — subtle, ~14px total.
-      // Only the offset is set; the base scale stays in CSS.
       const progress = (rect.top + rect.height / 2 - window.innerHeight / 2)
                      / window.innerHeight;
-      img.style.setProperty('--py', `${(progress * 14).toFixed(2)}px`);
+      target.style.setProperty('--py', `${(progress * 10).toFixed(2)}px`);
       ticking = false;
     };
 
