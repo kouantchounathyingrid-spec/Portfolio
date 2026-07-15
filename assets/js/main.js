@@ -80,6 +80,13 @@
     let lastY = window.scrollY;
     let ticking = false;
 
+    /* Direction must change by more than a hair before the bar reacts. Lenis
+       interpolates toward a target, so scrollY micro-oscillates by a pixel or
+       two as it settles — and a bare `y > lastY` reads each wobble as a real
+       direction change, flipping .nav--hidden and restarting its 0.45s
+       transform transition every frame. That is the flicker. */
+    const DIR_THRESHOLD = 6;
+
     const onScroll = () => {
       const y = window.scrollY;
       nav.classList.toggle('nav--stuck', y > 24);
@@ -87,11 +94,21 @@
       // Hide on scroll down, reveal on scroll up — but never while the mobile
       // menu is open, or the menu would slide away with it.
       const menuOpen = navLinks && navLinks.classList.contains('is-open');
-      if (!menuOpen) {
-        const goingDown = y > lastY && y > 320;
-        nav.classList.toggle('nav--hidden', goingDown);
+      const delta = y - lastY;
+
+      if (Math.abs(delta) > DIR_THRESHOLD) {
+        if (!menuOpen) {
+          nav.classList.toggle('nav--hidden', delta > 0 && y > 320);
+        }
+        // Only re-anchor once the move is real. Updating lastY on every frame
+        // would let the reference creep along with the jitter, so the threshold
+        // would never actually be crossed.
+        lastY = y;
       }
-      lastY = y;
+
+      // Near the top the bar is always visible, regardless of direction.
+      if (y <= 320) nav.classList.remove('nav--hidden');
+
       ticking = false;
     };
 
