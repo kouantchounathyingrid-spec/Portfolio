@@ -4,7 +4,7 @@ Personal portfolio for **Kouantchou Njeudji Nathy Ingrid**, Analytical Chemist a
 X-ray Fluorescence (XRF) Specialist. Static site, no build step, no backend —
 deploys to GitHub Pages as-is.
 
-**Live:** https://nathyingrid.github.io/
+**Live:** https://kouantchounathyingrid-spec.github.io/Portfolio/
 
 ---
 
@@ -168,12 +168,17 @@ assets.
 ### Before going live
 
 The canonical URL, `og:image`, sitemap and JSON-LD `@id`s all point at
-`https://nathyingrid.github.io/`. If the site is deployed anywhere else, update
+`https://kouantchounathyingrid-spec.github.io/Portfolio/`. If the site is deployed anywhere else, update
 those:
 
 ```bash
-grep -rn "nathyingrid.github.io" index.html sitemap.xml robots.txt
+grep -rn "github.io" index.html sitemap.xml robots.txt site.webmanifest
 ```
+
+Note this is a *project* Pages site, so it is served from a subpath
+(`/Portfolio/`), not the domain root. `site.webmanifest`'s `start_url`, `scope`
+and icon `src`s must stay relative — a leading `/` resolves to the domain root
+and 404s.
 
 For a custom domain, add a `CNAME` file containing the domain and update the
 same references.
