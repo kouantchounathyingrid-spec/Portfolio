@@ -278,7 +278,7 @@
   function initCardGlow() {
     if (prefersReduced() || !window.matchMedia('(hover: hover)').matches) return;
 
-    document.querySelectorAll('.xcard').forEach((card) => {
+    document.querySelectorAll('.xcard, .tl__card, .cert, .skillcard, .teach__row').forEach((card) => {
       card.addEventListener('pointermove', (e) => {
         const r = card.getBoundingClientRect();
         card.style.setProperty('--mx', `${e.clientX - r.left}px`);
@@ -423,6 +423,102 @@
     if (el) el.textContent = String(new Date().getFullYear());
   }
 
+  /* --- Publications carousel ----------------------------------------------- */
+  /* The track scrolls natively (touch, trackpad, shift+wheel, keyboard), so this
+     only layers on arrow buttons. If it never runs, the carousel still works —
+     the nav stays hidden and nothing is lost. */
+  function initPubsCarousel() {
+    const track = document.getElementById('pubs-track');
+    const prev = document.querySelector('[data-pubs-prev]');
+    const next = document.querySelector('[data-pubs-next]');
+    const dotsWrap = document.querySelector('[data-pubs-dots]');
+    if (!track || !prev || !next || !dotsWrap) return;
+
+    const cards = [...track.querySelectorAll('.pub')];
+    if (!cards.length) return;
+
+    const scrollable = () => track.scrollWidth - track.clientWidth > 4;
+
+    const step = () => {
+      // One card plus the gap, so a click lands cleanly on the next snap point.
+      const gap = parseFloat(getComputedStyle(track).columnGap) || 20;
+      return cards[0].getBoundingClientRect().width + gap;
+    };
+
+    const go = (dir) => track.scrollBy({
+      left: dir * step(),
+      behavior: prefersReduced() ? 'auto' : 'smooth',
+    });
+
+    const scrollToCard = (i) => track.scrollTo({
+      left: i * step(),
+      behavior: prefersReduced() ? 'auto' : 'smooth',
+    });
+
+    // Build one dot per card, so the count can never drift from the markup.
+    const dots = cards.map((_, i) => {
+      const d = document.createElement('button');
+      d.type = 'button';
+      d.className = 'pubs-dot';
+      d.setAttribute('role', 'tab');
+      d.setAttribute('aria-label', `Publication ${i + 1} of ${cards.length}`);
+      d.addEventListener('click', () => scrollToCard(i));
+      dotsWrap.appendChild(d);
+      return d;
+    });
+
+    const activeIndex = () => {
+      // Whichever card's left edge is nearest the track's left edge.
+      const x = track.scrollLeft;
+      return Math.max(0, Math.min(cards.length - 1, Math.round(x / step())));
+    };
+
+    const sync = () => {
+      const on = scrollable();
+      // Nothing to scroll (stacked on mobile) → no arrows, no dots.
+      prev.hidden = next.hidden = dotsWrap.hidden = !on;
+      if (!on) {
+        // Stacked: every card is on screen, so every card shows its contents.
+        cards.forEach((c) => c.classList.add('is-active'));
+        return;
+      }
+
+      const x = Math.round(track.scrollLeft);
+      const max = Math.round(track.scrollWidth - track.clientWidth);
+      // Tolerance, not an exact 0/max test: scroll-padding and sub-pixel
+      // snapping leave scrollLeft a few px off the true ends.
+      const EDGE = 8;
+      prev.disabled = x <= EDGE;
+      next.disabled = x >= max - EDGE;
+
+      const i = activeIndex();
+      dots.forEach((d, n) => d.setAttribute('aria-selected', String(n === i)));
+      // Only the snapped card shows its contents; the peeking neighbours are
+      // reduced to their card shape (see .pub:not(.is-active) in the CSS).
+      cards.forEach((c, n) => c.classList.toggle('is-active', n === i));
+    };
+
+    prev.addEventListener('click', () => go(-1));
+    next.addEventListener('click', () => go(1));
+
+    // Left/Right arrows when the track itself has focus.
+    track.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') { e.preventDefault(); go(1); }
+      if (e.key === 'ArrowLeft')  { e.preventDefault(); go(-1); }
+    });
+
+    let ticking = false;
+    track.addEventListener('scroll', () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => { sync(); ticking = false; });
+    }, { passive: true });
+
+    if ('ResizeObserver' in window) new ResizeObserver(sync).observe(track);
+    window.addEventListener('resize', sync, { passive: true });
+    sync();
+  }
+
   /* --- Boot ---------------------------------------------------------------- */
   const boot = () => {
     initLenis();
@@ -434,6 +530,7 @@
     initCounters();
     initParallax();
     initCardGlow();
+    initPubsCarousel();
     initLattice();
     initYear();
   };

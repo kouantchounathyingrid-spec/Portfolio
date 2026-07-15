@@ -137,6 +137,27 @@ p { text-wrap: pretty; }
 }
 .section--tint { background: var(--paper-warm); }
 
+/* Research is the page's centrepiece and gets its own ground — a deep coffee
+   field carrying the theme's red. The cards sit on it in near-white, so the
+   contrast comes from the SECTION being dark rather than the card being tinted:
+   an earlier attempt tinted the cards instead and measured 1.05:1 against this
+   background, i.e. indistinguishable. */
+.section--research {
+  background:
+    radial-gradient(90% 130% at 8% 0%, rgba(232, 19, 57, 0.20), transparent 62%),
+    radial-gradient(80% 110% at 100% 100%, rgba(227, 143, 145, 0.16), transparent 58%),
+    #2E1F16;
+}
+/* Everything in the section head is authored dark-on-light; invert it here or it
+   sits invisibly on the dark ground. */
+.section--research .sec-head__title { color: var(--paper); }
+.section--research .sec-head__lede { color: rgba(253, 251, 250, 0.75); }
+.section--research .sec-head__eyebrow { color: var(--almond); }
+.section--research .sec-head__ghost::before {
+  color: var(--paper);
+  opacity: 0.05;
+}
+
 .skip-link {
   position: absolute;
   top: -100px; left: var(--gutter);
@@ -726,12 +747,22 @@ p { text-wrap: pretty; }
   line-height: 1.75;
   max-width: var(--measure);
 }
-/* Justify the prose only — NOT .pillar__desc, which also matches ".about__body p"
-   but sits in a ~200px card where too few words per line make justification open
-   ragged gaps and hyphenate ("vali-dating"). Hyphens are on because this copy
-   carries long unbreakable terms ("characterisation", "Lobachevsky") that would
-   otherwise force large word-gaps. */
-.about__body > p:not(.about__lead) {
+/* --- Justified prose ------------------------------------------------------
+   Applied to running body copy only. Deliberately NOT applied to the narrow
+   card descriptions (.xcard__desc ~229px, .pillar__desc ~178px): with only a
+   few words per line the justifier has nowhere to put the slack, so it opens
+   rivers of whitespace and hyphenates mid-word. Nor to labels, UI text, or
+   .contact__lede (centred by design).
+
+   Hyphens are on because this copy carries long unbreakable technical terms
+   ("characterisation", "Lobachevsky", "spectroscopy") that would otherwise
+   force large word-gaps. Needs <html lang="en"> to pick the right dictionary,
+   which is set. text-wrap:pretty discourages the last-line orphan that
+   justification makes conspicuous. */
+.about__body > p:not(.about__lead),
+.sec-head__lede,
+.focus__body,
+.teach__body > p {
   text-align: justify;
   hyphens: auto;
   -webkit-hyphens: auto;
@@ -782,16 +813,21 @@ p { text-wrap: pretty; }
 }
 .pillar__desc {
   margin-top: 0.4rem;
-  font-size: var(--step--1);
+  font-size: var(--step-0);
   color: var(--text-muted);
-  font-weight: 300;
-  line-height: 1.55;
+  font-weight: 400;
+  line-height: 1.6;
 }
 
 /* --- Expertise ------------------------------------------------------------ */
+/* Six cards as a deliberate 3x2, not auto-fit: auto-fit resolved to 4 columns at
+   1440px, leaving an orphaned row of 2. grid-auto-rows:1fr then makes every row
+   the same height, so all six cards match — otherwise each row sizes to its own
+   tallest card and the rows differ (measured a 65px spread). */
 .expertise__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr));
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 1fr;
   gap: 1.25rem;
 }
 .xcard {
@@ -799,13 +835,18 @@ p { text-wrap: pretty; }
   padding: clamp(1.5rem, 2.5vw, 2rem);
   border: 1px solid var(--line-card);
   border-radius: var(--radius-lg);
-  background: var(--paper);
+  /* Same warm cream as .tl__card — the two card families share one surface. */
+  background:
+    radial-gradient(100% 80% at 0% 0%, rgba(232, 19, 57, 0.05), transparent 60%),
+    linear-gradient(150deg, #FBF6F3, var(--paper-warm));
   box-shadow: var(--shadow-card);
   overflow: hidden;
   transition: transform 0.5s var(--ease), border-color 0.5s var(--ease),
               box-shadow 0.5s var(--ease);
 }
-.section--tint .xcard { background: var(--paper); }
+/* (The old `.section--tint .xcard { background: var(--paper) }` override is gone:
+   it forced the cards back to flat paper to lift them off the tinted section,
+   but they now carry their own cream surface and it would win on specificity.) */
 
 /* Accent rail — draws down the left edge on hover. Gives each card a definite
    edge and a reason to feel interactive, without adding chrome at rest. */
@@ -859,10 +900,10 @@ p { text-wrap: pretty; }
   margin-bottom: 0.5rem;
 }
 .xcard__desc {
-  font-size: var(--step--1);
+  font-size: var(--step-0);
   color: var(--text-muted);
-  font-weight: 300;
-  line-height: 1.65;
+  font-weight: 400;
+  line-height: 1.7;
 }
 
 /* --- Timeline (experience + education) ------------------------------------ */
@@ -905,11 +946,42 @@ p { text-wrap: pretty; }
   padding: clamp(1.4rem, 2.5vw, 1.9rem);
   border: 1px solid var(--line-card);
   border-radius: var(--radius-lg);
-  background: var(--paper);
+  /* Warm cream against the section's near-white --paper, with a touch of the
+     theme red from the top-left. The section stays light; only the card is
+     tinted. */
+  background:
+    radial-gradient(100% 80% at 0% 0%, rgba(232, 19, 57, 0.05), transparent 60%),
+    linear-gradient(150deg, #FBF6F3, var(--paper-warm));
   box-shadow: var(--shadow-card);
   transition: transform 0.5s var(--ease), border-color 0.5s var(--ease),
               box-shadow 0.5s var(--ease);
 }
+/* Same hover as .xcard: a coral glow tracking the cursor, plus the red accent
+   rail down the left edge. The lift stays horizontal here — these sit in a
+   timeline, so they slide out from the rail rather than rising. */
+.tl__card { position: relative; overflow: hidden; }
+.tl__card::after {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(var(--red), var(--coral));
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.5s var(--ease);
+}
+.tl__card:hover::after { transform: scaleY(1); }
+.tl__card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(600px circle at var(--mx, 50%) var(--my, 0%),
+              rgba(227, 143, 145, 0.13), transparent 42%);
+  opacity: 0;
+  transition: opacity 0.5s var(--ease);
+  pointer-events: none;
+}
+.tl__card:hover::before { opacity: 1; }
 .tl__card:hover {
   transform: translateX(4px);
   border-color: var(--line-strong);
@@ -992,29 +1064,120 @@ p { text-wrap: pretty; }
 }
 
 /* --- Publications --------------------------------------------------------- */
-.pubs { display: grid; gap: 1.25rem; }
-.pub {
+/* --- Publications carousel ------------------------------------------------
+   The track is a scroll container, not a JS widget: swipe, trackpad and
+   shift+wheel work natively, and all five cards stay in the DOM so Google and
+   Ctrl+F still see every abstract. The JS arrows are a convenience layer. */
+.pubs-carousel { position: relative; }
+.pubs {
   display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: clamp(1rem, 2.5vw, 1.75rem);
+  grid-auto-flow: column;
+  /* A fixed track width, not minmax(): inside an overflow-x container the
+     free space is unbounded, so minmax() just resolves to its minimum and
+     every card collapsed to 320px — which made them ~1300px tall.
+
+     Sized so one card nearly fills the track and only the edge of the next
+     shows (~80px at 1440px): enough to expose the neighbour's border and
+     signal "this scrolls", without the 440px half-card that read as a broken
+     two-column layout. Subtracting the peek from 100% (rather than capping at
+     100%) keeps that sliver of the next card visible at every width. */
+  grid-auto-columns: min(100% - 100px, 1140px);
+  gap: 1.25rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  /* Inline padding lets the FIRST and LAST cards reach the centre too — without
+     it they can only sit against their end of the track and centre-snapping
+     leaves them permanently offset. Sized to half the leftover track so the peek
+     is even at both ends. Block padding is just room for the card shadow. */
+  padding: 4px calc(50% - (min(100% - 100px, 1140px) / 2));
+  scroll-padding-inline: 0;
+  /* Scrollbar hidden — the dots and arrows are the affordance. Scrolling itself
+     still works natively (swipe, trackpad, shift+wheel). */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.pubs::-webkit-scrollbar { display: none; }
+.pubs:focus-visible { outline: 2px solid var(--coffee); outline-offset: 4px; }
+
+.pub {
+  /* center, not start: `start` pins the active card to the track's left edge, so
+     the previous card sits entirely off-canvas and only the next one ever peeks.
+     Centring gives a symmetric sliver of both neighbours. */
+  scroll-snap-align: center;
+  /* A fixed row rhythm, so the same part sits at the same height on every card:
+       idx / title / meta / abstract / findings / link
+     Titles run 2–4 lines, so without reserved rows each card's abstract would
+     start at a different y. The title row is sized to the longest title and the
+     abstract row takes the slack, which keeps the findings and link aligned too. */
+  display: grid;
+  /* FIXED row heights, not minmax(floor, auto). Each card is its own grid
+     container, so `auto` rows resolve per-card against that card's own content
+     — cards ended up with 104.6px vs 100px title rows and 41.6px vs 38.4px meta
+     rows, which is why every part below sat a few px off between cards. Pinning
+     the rows makes each card resolve identically, which is the only way to align
+     across independent grids. Sized to the worst case: longest title 95px,
+     tallest meta 28px. The index has no row — it is positioned against the
+     card's top-left corner, outside this flow. */
+  grid-template-rows: 100px 30px 1fr auto 40px;
+  gap: 0.7rem;
   align-items: start;
-  padding: clamp(1.4rem, 2.5vw, 2rem);
+  /* The card is ~1130px but the abstract wants a ~75ch measure, so the content
+     is capped and centred rather than stretched across the full width — that is
+     what leaves the block sitting in the middle of the card instead of hugging
+     the left edge with dead space beside it. */
+  /* One column, capped and centred. justify-items:stretch (the default) keeps
+     each row filling that column, so the prose stays left-aligned inside a
+     centred block — not centred text, which would be unreadable here. */
+  grid-template-columns: min(100%, 74ch);
+  justify-content: center;
+  padding: clamp(2rem, 3.5vw, 3rem) clamp(1.4rem, 2.5vw, 2rem);
   border: 1px solid var(--line-card);
   border-radius: var(--radius-lg);
-  background: var(--paper);
-  box-shadow: var(--shadow-card);
+  /* Near-white against the section's dark ground — the card's separation comes
+     from that contrast, not from tinting the card itself. The shadow is deeper
+     than the page default so the card reads as lifted off the dark field. */
+  background: linear-gradient(165deg, #FFFCFB, #F9F2EE);
+  box-shadow: 0 26px 60px -24px rgba(0, 0, 0, 0.55);
+  position: relative;
+  overflow: hidden;
   transition: transform 0.5s var(--ease), border-color 0.5s var(--ease),
               box-shadow 0.5s var(--ease);
 }
-.pub:hover {
-  transform: translateY(-4px);
-  border-color: var(--line-strong);
-  box-shadow: var(--shadow-card-hover);
+/* A red rule across the card's top edge — the theme accent, present at rest
+   rather than only on hover like the skills cards' rail. */
+.pub::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--red), var(--coral));
+  z-index: 1;
 }
+/* Only the SNAPPED card shows its contents. The neighbours are cropped to a
+   sliver by the track, and their text bleeding through that gap read as a
+   glitch rather than a hint — so their content fades out and only the card
+   shape (background, border, red rule) remains as the "there is more" cue.
+   JS marks the active card; without JS every card stays legible. */
+.js .pubs .pub > *,
+.js .pubs .pub > div > * {
+  transition: opacity 0.35s var(--ease);
+}
+.js .pubs .pub:not(.is-active) > *,
+.js .pubs .pub:not(.is-active) > div > * {
+  opacity: 0;
+}
+/* The index is the exception: it sits in the card's top-left corner, inside the
+   visible sliver, and stays lit on the peeking neighbours so you can see which
+   publication is next. */
+.js .pubs .pub:not(.is-active) > .pub__idx { opacity: 1; }
 .pub__idx {
   font-size: var(--step--1);
-  font-weight: 500;
-  color: var(--text-faint);
+  font-weight: 600;
+  /* --red-text, not --red: the darkened variant clears AA on this near-white
+     card, where the raw accent red would not. */
+  color: var(--red-text);
+  letter-spacing: 0.08em;
   font-variant-numeric: tabular-nums;
   padding-top: 0.3rem;
 }
@@ -1026,6 +1189,23 @@ p { text-wrap: pretty; }
   margin-bottom: 0.6rem;
   max-width: 54ch;
 }
+/* Card head centred: the title and meta read as one centred unit above the
+   justified abstract. The index is the exception — it is pulled out of the
+   centred column entirely and pinned to the card's own top-left corner. */
+.pub .pub__idx {
+  position: absolute;
+  top: clamp(1.1rem, 2vw, 1.6rem);
+  left: clamp(1.4rem, 2.5vw, 2rem);
+  margin: 0;
+  padding: 0;
+}
+.pub .pub__title {
+  text-align: center;
+  margin-inline: auto;
+}
+.pub .pub__meta { justify-content: center; }
+/* CTA to the card's right edge, balancing the index at top-left. */
+.pub .pub__link { justify-self: end; }
 .pub__meta {
   display: flex;
   flex-wrap: wrap;
@@ -1056,13 +1236,39 @@ p { text-wrap: pretty; }
   background: rgba(232, 19, 57, 0.08);
   color: var(--red-text);
 }
+/* Body copy, not a label: --step--1 (15px) at weight 300 in a muted brown sits
+   below the readable floor for running prose. Match the About column's size and
+   carry a little more weight — the --step--1 token stays as-is for the labels,
+   eyebrows and badges that legitimately want it.
+
+   Ragged-right, deliberately: these abstracts were justified when they were
+   704px wide, but in a ~430px carousel card there are too few words per line
+   and the justifier opens visible rivers of whitespace. */
 .pub__abstract {
-  font-size: var(--step--1);
+  font-size: var(--step-0);
   color: var(--text-muted);
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.7;
   max-width: 76ch;
+  /* Justified again now the content column is 74ch. It was set ragged when the
+     cards were ~430px, where too few words per line opened visible rivers —
+     that constraint is gone. Hyphens keep the word-gaps even against the long
+     technical terms. */
+  text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  text-wrap: pretty;
 }
+/* The markup wraps title/meta/abstract/findings in an anonymous div. display:
+   contents dissolves it so those children become grid items of .pub itself —
+   that is what lets the fixed row rhythm above align them across cards. */
+.pub > div { display: contents; }
+/* The grid `gap` owns the spacing now. Leftover element margins would stack on
+   top of the fixed rows and break the alignment they exist to guarantee. */
+.pub .pub__title,
+.pub .pub__meta,
+.pub .pub__abstract { margin: 0; }
+.pub .pub__findings { margin-top: 0; }
 .pub__findings {
   display: flex;
   flex-wrap: wrap;
@@ -1099,21 +1305,151 @@ p { text-wrap: pretty; }
 .pub__link:hover svg { transform: rotate(-45deg); }
 .pub__link svg { transition: transform 0.4s var(--ease); }
 
+/* Arrows sit outside the track, vertically centred on it. The shell has room in
+   the page gutter; on narrow desktops they overlap the track edge instead, which
+   is why they carry a background and shadow. */
+.pubs-btn {
+  position: absolute;
+  top: calc(50% - 21px);
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  background: var(--paper);
+  color: var(--text);
+  cursor: pointer;
+  box-shadow: 0 6px 20px -8px rgba(66, 45, 30, 0.45);
+  transition: background-color 0.3s var(--ease), color 0.3s var(--ease),
+              border-color 0.3s var(--ease), opacity 0.3s var(--ease);
+}
+.pubs-btn[hidden] { display: none; }
+/* Nudged over the track's edge on purpose: the shell spans the page gutter, and
+   pushing the arrows fully outside it would put them off-canvas on narrow
+   desktops. The background + shadow keep them legible over a card. */
+.pubs-btn--prev { left: -14px; }
+.pubs-btn--next { right: -14px; }
+.pubs-btn:hover:not(:disabled) {
+  background: var(--coffee);
+  border-color: var(--coffee);
+  color: var(--paper);
+}
+.pubs-btn:disabled { opacity: 0.25; cursor: default; }
+
+/* Dots — position indicator, replacing the scrollbar. */
+.pubs-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+}
+.pubs-dots[hidden] { display: none; }
+.pubs-dot {
+  width: 8px; height: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--line-strong);
+  cursor: pointer;
+  transition: background-color 0.3s var(--ease), transform 0.3s var(--ease),
+              width 0.3s var(--ease);
+}
+.pubs-dot:hover { background: var(--taupe); }
+.pubs-dot[aria-selected="true"] {
+  background: var(--coffee);
+  width: 26px;
+  border-radius: 99px;
+}
+/* The dot itself is tiny; give it a comfortable tap target without changing
+   how it looks. */
+.pubs-dot::before {
+  content: "";
+  position: absolute;
+  inset: -10px;
+}
+.pubs-dot { position: relative; }
+
 /* --- Skills --------------------------------------------------------------- */
+/* Portrait beside the capability cards, mirroring .about__grid's split. The
+   image column is the narrower one — the cards carry the section's substance. */
+.skills__split {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.75fr) 1.25fr;
+  gap: clamp(2rem, 4vw, 3.5rem);
+  /* stretch, not start: lets the figure column match the card grid's height so
+     the image can fill it. Under `start` the figure sized to its own content and
+     stopped 126px short of the cards. */
+  align-items: stretch;
+}
+.skills__figure {
+  margin: 0;
+  position: relative;
+  /* The height has to be handed down the whole chain — figure > picture > img.
+     <picture> is an inline wrapper with no height of its own, so `height:100%`
+     on the img alone resolved against nothing and the image stayed short. */
+  display: flex;
+}
+.skills__figure picture {
+  display: block;
+  width: 100%;
+}
+.skills__figure img {
+  display: block;
+  width: 100%;
+  /* Full column height rather than a fixed aspect-ratio, which capped the image
+     at 3/4 and left it short of the cards beside it. */
+  height: 100%;
+  border-radius: var(--radius-lg);
+  object-fit: cover;
+  /* Framed slightly high: the source is full-length, and the face is in the
+     upper third. */
+  object-position: 50% 22%;
+  box-shadow: var(--shadow-card);
+}
 .skills__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
   gap: 1.25rem;
 }
 .skillcard {
+  position: relative;
+  overflow: hidden;
   padding: clamp(1.5rem, 2.5vw, 1.9rem);
   border: 1px solid var(--line-card);
   border-radius: var(--radius-lg);
-  background: var(--paper);
+  /* Same warm cream as .xcard / .tl__card / .cert — one shared card surface. */
+  background:
+    radial-gradient(100% 80% at 0% 0%, rgba(232, 19, 57, 0.05), transparent 60%),
+    linear-gradient(150deg, #FBF6F3, var(--paper-warm));
   box-shadow: var(--shadow-card);
   transition: transform 0.5s var(--ease), border-color 0.5s var(--ease),
               box-shadow 0.5s var(--ease);
 }
+/* Same hover as the other card families: coral glow tracking the cursor + red
+   accent rail down the left edge. */
+.skillcard::after {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(var(--red), var(--coral));
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.5s var(--ease);
+}
+.skillcard:hover::after { transform: scaleY(1); }
+.skillcard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(600px circle at var(--mx, 50%) var(--my, 0%),
+              rgba(227, 143, 145, 0.13), transparent 42%);
+  opacity: 0;
+  transition: opacity 0.5s var(--ease);
+  pointer-events: none;
+}
+.skillcard:hover::before { opacity: 1; }
 .skillcard:hover {
   transform: translateY(-4px);
   border-color: var(--line-strong);
@@ -1133,7 +1469,14 @@ p { text-wrap: pretty; }
   font-weight: 500;
   letter-spacing: -0.02em;
 }
-.chips { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+/* Stacked, not wrapped: a column of chips each stretched to the card's width.
+   align-items:stretch (the default) is what equalises them — sizing to content
+   would leave every chip a different width. */
+.chips {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
 .chip {
   padding: 0.42rem 0.85rem;
   border-radius: 100px;
@@ -1152,8 +1495,11 @@ p { text-wrap: pretty; }
   color: var(--paper);
   transform: translateY(-2px);
 }
+/* flex, not inline-flex: inline-flex shrink-wraps to its content and would opt
+   this chip out of the column's stretch, leaving the language chips narrower
+   than the rest. */
 .chip--lang {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 0.5rem;
 }
@@ -1181,10 +1527,15 @@ p { text-wrap: pretty; }
   gap: 1.25rem;
 }
 .cert {
+  position: relative;
+  overflow: hidden;
   padding: clamp(1.4rem, 2.5vw, 1.8rem);
   border: 1px solid var(--line-card);
   border-radius: var(--radius-lg);
-  background: var(--paper);
+  /* Same warm cream as .xcard and .tl__card — one shared card surface. */
+  background:
+    radial-gradient(100% 80% at 0% 0%, rgba(232, 19, 57, 0.05), transparent 60%),
+    linear-gradient(150deg, #FBF6F3, var(--paper-warm));
   box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
@@ -1192,6 +1543,29 @@ p { text-wrap: pretty; }
   transition: transform 0.5s var(--ease), border-color 0.5s var(--ease),
               box-shadow 0.5s var(--ease);
 }
+/* Same hover as .xcard / .tl__card: coral glow tracking the cursor + red rail. */
+.cert::after {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(var(--red), var(--coral));
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.5s var(--ease);
+}
+.cert:hover::after { transform: scaleY(1); }
+.cert::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(600px circle at var(--mx, 50%) var(--my, 0%),
+              rgba(227, 143, 145, 0.13), transparent 42%);
+  opacity: 0;
+  transition: opacity 0.5s var(--ease);
+  pointer-events: none;
+}
+.cert:hover::before { opacity: 1; }
 .cert:hover {
   transform: translateY(-5px);
   border-color: var(--line-strong);
@@ -1331,7 +1705,11 @@ p { text-wrap: pretty; }
   overflow: hidden;
 }
 .teach__row {
-  background: var(--paper);
+  position: relative;
+  /* Same warm cream as the card families. */
+  background:
+    radial-gradient(100% 80% at 0% 0%, rgba(232, 19, 57, 0.05), transparent 60%),
+    linear-gradient(150deg, #FBF6F3, var(--paper-warm));
   padding: 1.05rem 1.3rem;
   display: flex;
   align-items: center;
@@ -1339,13 +1717,51 @@ p { text-wrap: pretty; }
   font-size: var(--step--1);
   color: var(--text-muted);
   font-weight: 300;
-  transition: background-color 0.4s var(--ease), color 0.4s var(--ease);
+  transition: color 0.4s var(--ease);
 }
-.teach__row:hover { background: var(--paper-warm); color: var(--text); }
-.teach__row svg { color: var(--taupe); flex: none; }
+/* Same hover as the card families, adapted to a row: the accent rail runs the
+   row's full height rather than a card's, and the glow is tighter since a row is
+   a fraction of a card's area. No overflow:hidden needed — the parent list
+   already clips to its rounded corners. */
+.teach__row::after {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(var(--red), var(--coral));
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.4s var(--ease);
+}
+.teach__row:hover::after { transform: scaleY(1); }
+.teach__row::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 50%),
+              rgba(227, 143, 145, 0.16), transparent 45%);
+  opacity: 0;
+  transition: opacity 0.4s var(--ease);
+  pointer-events: none;
+  /* Behind the row's content, not over it: the label is a bare text node with no
+     element to raise above the glow, so the glow goes under everything instead. */
+  z-index: 0;
+}
+.teach__row:hover::before { opacity: 1; }
+.teach__row:hover { color: var(--text); }
+.teach__row svg {
+  color: var(--taupe);
+  flex: none;
+  position: relative;
+  z-index: 1;
+}
 
 /* --- Contact -------------------------------------------------------------- */
 .contact { text-align: center; }
+/* Scoped override, not a change to the shared rule: the contact title runs to
+   three lines where other sections' run to one, so the -60% that sits the ghost
+   nicely behind a single-line heading leaves it low here. */
+.contact .sec-head__ghost::before { translate: -50% -78%; }
 .contact__title {
   font-size: var(--step-5);
   font-weight: 600;
@@ -1361,64 +1777,61 @@ p { text-wrap: pretty; }
   font-size: var(--step-1);
   line-height: 1.6;
 }
-.contact__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  justify-content: center;
-  margin-bottom: clamp(3rem, 5vw, 4rem);
-}
-.contact__cards {
+/* Readable contact values, not buttons or cards. The footer directly below
+   already carries every destination as an icon, so this layer exists only for
+   the things a visitor needs to READ and copy — an address, a number, an
+   identifier — which an icon cannot convey. Each is still a link; visible text
+   that is also clickable costs nothing. */
+.contact__details {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
-  gap: 1rem;
+  gap: 0.9rem;
+  width: fit-content;
   text-align: left;
 }
-.ccard {
-  display: flex;
+.contact__details li {
+  display: grid;
+  grid-template-columns: auto 6.5rem 1fr;
+  /* center, not baseline: the icon is a box, not text — baseline alignment
+     would hang it off the key's baseline. */
   align-items: center;
   gap: 0.9rem;
-  padding: 1.15rem 1.35rem;
-  border: 1px solid var(--line-card);
-  border-radius: var(--radius);
-  background: var(--paper);
-  box-shadow: var(--shadow-card);
-  transition: transform 0.45s var(--ease), border-color 0.45s var(--ease),
-              box-shadow 0.45s var(--ease);
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--line);
 }
-.ccard:hover {
-  transform: translateY(-4px);
-  border-color: var(--line-strong);
-  box-shadow: var(--shadow-card-hover);
-}
-.ccard__icon {
-  width: 40px; height: 40px;
-  border-radius: 11px;
+.contact__details li:last-child { border-bottom: 0; padding-bottom: 0; }
+.contact__icon {
+  width: 34px; height: 34px;
+  border-radius: 10px;
   display: grid;
   place-items: center;
   background: var(--paper-warm);
   border: 1px solid var(--line);
-  color: var(--coffee);
+  color: var(--taupe-text);
   flex: none;
-  transition: background-color 0.45s var(--ease), color 0.45s var(--ease);
 }
-.ccard:hover .ccard__icon { background: var(--coffee); color: var(--almond); }
-
-/* WhatsApp card keeps its brand colour so it's identifiable at a glance. */
-.ccard__icon--wa { color: #117C6F; }
-.ccard:hover .ccard__icon--wa { background: #117C6F; color: #fff; }
-.ccard__key {
-  font-size: 0.68rem;
+.contact__key {
+  font-size: 0.7rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-faint);
+  font-weight: 500;
 }
-.ccard__val {
-  font-size: var(--step--1);
+.contact__val {
+  font-size: var(--step-0);
   font-weight: 500;
   color: var(--text);
+  text-decoration: none;
   word-break: break-word;
-  line-height: 1.4;
+  border-bottom: 1px solid transparent;
+  transition: color 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+.contact__val:hover,
+.contact__val:focus-visible {
+  color: var(--red-text);
+  border-bottom-color: currentColor;
 }
 
 /* --- Footer --------------------------------------------------------------- */
@@ -1594,9 +2007,28 @@ p { text-wrap: pretty; }
   .about__grid { grid-template-columns: 1fr; }
   .about__figure { max-width: 380px; }
   .metrics { grid-template-columns: repeat(2, 1fr); }
+  /* 3 fixed columns would crush these below ~270px each; step down to 2. The
+     replaced auto-fit used to handle this implicitly. */
+  .expertise__grid { grid-template-columns: repeat(2, 1fr); }
+  /* Stack the portrait above the capability cards rather than squeezing both. */
+  .skills__split { grid-template-columns: 1fr; }
+  .skills__figure { max-width: 380px; margin-inline: auto; }
 }
 
 @media (max-width: 760px) {
+  /* No carousel on narrow screens. A card is ~1070px tall here against an ~840px
+     viewport, so horizontal paging would force scrolling in both axes to read one
+     abstract. A plain vertical stack — which is what the page does everywhere
+     else — is strictly better. */
+  .pubs {
+    grid-auto-flow: row;
+    grid-auto-columns: auto;
+    overflow-x: visible;
+    scroll-snap-type: none;
+    padding-bottom: 0;
+  }
+  .pubs-btn, .pubs-dots { display: none; }
+
   /* The panel drops from behind the bar, so it must be fully opaque — the
      translucent .nav--stuck backdrop sits on the parent and would otherwise
      show the hero straight through the menu items. */
@@ -1643,9 +2075,15 @@ p { text-wrap: pretty; }
 
 @media (max-width: 460px) {
   .metrics { grid-template-columns: 1fr; }
+  /* Single column on phones; 1fr rows would also force every card to the tallest
+     one's height in a stack, which wastes a lot of vertical space. */
+  .expertise__grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+  }
   .hero__word--outline { -webkit-text-stroke-width: 1px; }
   .btn { width: 100%; justify-content: center; }
-  .hero__actions, .contact__actions { width: 100%; }
+  .hero__actions { width: 100%; }
 }
 
 /* --- Reduced motion ------------------------------------------------------- */
@@ -1667,7 +2105,7 @@ p { text-wrap: pretty; }
 
 /* --- Print ---------------------------------------------------------------- */
 @media print {
-  .nav, .hero__canvas, .hero__glow, .contact__actions, .footer__socials { display: none; }
+  .nav, .hero__canvas, .hero__glow, .footer__socials { display: none; }
   body { background: #fff; color: #000; }
   .section { padding-block: 1.5rem; break-inside: avoid; }
   a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 0.7em; }
