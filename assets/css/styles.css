@@ -574,23 +574,38 @@ p { text-wrap: pretty; }
   justify-content: flex-start;
 }
 
+/* Aside block, per the reference: a tight role heading, one small muted
+   sentence, then a single button. Kept narrow so it reads as a caption beside
+   the subject rather than a column of body copy. */
+/* Two deliberate lines, not a wrapped one: at heading size "Analytical Chemist
+   XRF Specialist" always breaks in this narrow column, and an inline dot
+   separator ends up orphaned at the end of line one. Stack them instead and let
+   weight carry the hierarchy. */
 .hero__role {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.6rem;
-  margin-bottom: 1.1rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  margin-bottom: 0.6rem;
+  line-height: 1.15;
 }
 .hero__role-item {
-  font-size: var(--step-1);
-  font-weight: 500;
-  letter-spacing: -0.02em;
+  font-size: var(--step-2);
+  font-weight: 600;
+  letter-spacing: -0.03em;
 }
-.hero__role-sep {
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  background: var(--taupe);
-  flex: none;
+.hero__role-item--sub {
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.hero__blurb {
+  max-width: 30ch;
+  margin-bottom: 1.4rem;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  font-weight: 300;
+  line-height: 1.6;
 }
 
 .hero__actions {
@@ -711,12 +726,29 @@ p { text-wrap: pretty; }
   line-height: 1.75;
   max-width: var(--measure);
 }
+/* Justify the prose only — NOT .pillar__desc, which also matches ".about__body p"
+   but sits in a ~200px card where too few words per line make justification open
+   ragged gaps and hyphenate ("vali-dating"). Hyphens are on because this copy
+   carries long unbreakable terms ("characterisation", "Lobachevsky") that would
+   otherwise force large word-gaps. */
+.about__body > p:not(.about__lead) {
+  text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  text-wrap: pretty;
+}
 .about__body strong { color: var(--text); font-weight: 500; }
+/* A short title, not a standfirst. It used to be a full sentence at --step-1
+   (24px) sitting above 18px body copy, which made the column read as three
+   different sizes. Now every paragraph here is one size and this line is a brief
+   label above them — set apart by weight and tracking, not scale. */
 .about__lead {
-  font-size: var(--step-1);
+  font-size: var(--step-0) !important;
   color: var(--text) !important;
-  font-weight: 400 !important;
-  line-height: 1.55 !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.2rem;
 }
 
 .pillars {
@@ -1543,7 +1575,10 @@ p { text-wrap: pretty; }
     padding-bottom: 0;
     text-align: center;
   }
-  .hero__role, .hero__actions { justify-content: center; }
+  .hero__actions { justify-content: center; }
+  /* .hero__role is a column here, so centring is the cross axis, not justify. */
+  .hero__role { align-items: center; }
+  .hero__blurb { margin-inline: auto; }
   .hero__pills {
     grid-column: 1;
     grid-row: 4;
